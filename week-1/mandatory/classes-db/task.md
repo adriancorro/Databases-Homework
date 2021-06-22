@@ -9,6 +9,73 @@ To submit this homework write the correct commands for each question here:
 ```sql
 
 
+ \c cyf_classes;
+
+ CREATE TABLE mentors (  id        SERIAL PRIMARY KEY,  name      VARCHAR(30) NOT NULL,  years_glasgow     VARCHAR(120) NOT NULL,  address   VARCHAR(120),  fav_programming_language VARCHAR(30) );
+
+insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Teo', '4','barcelona', 'Javascript');
+
+
+ insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Adrian', '3','barcelona', 'Javascript');
+
+insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Pepe', '24','Praia', 'python');
+
+insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Nietzsche', 'Lutzen','barcelona', 'Javascript');
+
+insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Kelly Slater', '28','california', 'Javascript');
+
+CREATE TABLE students(  id        SERIAL PRIMARY KEY,  name      VARCHAR(30) NOT NULL,  address   VARCHAR(120),  graduated_CodeYourFuture bit not null );
+
+                                                                    ^
+insert into students(name, address, graduated_CodeYourFuture) values ('Kelly Slater','california', '0');
+
+                                                                 ^
+insert into students(name, address, graduated_CodeYourFuture) values ('adrian','caracas', '0');
+
+insert into students(name, address, graduated_CodeYourFuture) values ('alvaro','barcelona', '1');
+
+insert into students(name, address, graduated_CodeYourFuture) values ('mateo','cali', '0');
+
+insert into students(name, address, graduated_CodeYourFuture) values ('leon','buenos aires', '0');
+
+insert into students(name, address, graduated_CodeYourFuture) values ('manuel','lima', '0');
+
+insert into students(name, address, graduated_CodeYourFuture) values ('emilio','caracas', '0');
+
+insert into students(name, address, graduated_CodeYourFuture) values ('diego','caracas', '0');
+
+insert into students(name, address, graduated_CodeYourFuture) values ('ronar','santo domingo');
+ 
+insert into students(name, address, graduated_CodeYourFuture) values ('Ato','caracas', '0');
+
+insert into students(name, address, graduated_CodeYourFuture) values ('Juan','caracas', '0');
+
+cyf_classes=# SELECT * FROM students;
+
+ id |     name     |    address    | graduated_codeyourfuture
+----+--------------+---------------+--------------------------
+  1 | Kelly Slater | california    | 0
+  2 | adrian       | caracas       | 0
+  3 | alvaro       | barcelona     | 1
+  4 | mateo        | cali          | 0
+  5 | leon         | buenos aires  | 0
+  6 | manuel       | lima          | 0
+  7 | emilio       | caracas       | 0
+  8 | diego        | caracas       | 0
+  9 | ronar        | santo domingo | 0
+ 10 | Ato          | caracas       | 0
+ 11 | Juan         | caracas       | 0
+(11 filas)
+
+
+CREATE TABLE classes(  id        SERIAL PRIMARY KEY,  leading_mentor     VARCHAR(30) NOT NULL,  class_topic VARCHAR(120),  class_date date , class_location   VARCHAR(30) NOT NULL);
+
+insert into classes(leading_mentor, class_topic, class_date , class_location ) values ('Kelly Slater','Javascript', '22-06-2021', 'barcelona');
+
+CREATE TABLE assistance(  id        SERIAL PRIMARY KEY,  student_id INT references students(id),  class_id INT references classes(id));
+CREATE TABLE
+insert into assistance(student_id, class_id) values (1,1);
+
 ```
 
 When you have finished all of the questions - open a pull request with your answers to the `Databases-Homework` repository.
