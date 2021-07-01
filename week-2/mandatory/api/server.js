@@ -19,4 +19,12 @@ app.get("/", function(req, res) {
     });
 });
 
+
+
+/* const queryResult = await pool.query(
+    "SELECT * FROM users where user_id = " + userId
+);
+const user = queryResult.rows[0]; */
+
+
 app.listen(3000, () => console.log("Server is up and running"))

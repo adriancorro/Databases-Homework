@@ -11,25 +11,21 @@ To submit this homework write the correct commands for each question here:
 
  \c cyf_classes;
 
- CREATE TABLE mentors (  id        SERIAL PRIMARY KEY,  name      VARCHAR(30) NOT NULL,  years_glasgow     VARCHAR(120) NOT NULL,  address   VARCHAR(120),  fav_programming_language VARCHAR(30) );
+ CREATE TABLE mentors (  id        SERIAL PRIMARY KEY,  name      VARCHAR(30) NOT NULL,  years_glasgow     int,  address   VARCHAR(120),  fav_programming_language VARCHAR(30) );
 
-insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Teo', '4','barcelona', 'Javascript');
+insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Teo', 4,'barcelona', 'Javascript');
+insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Adrian', 3,'barcelona', 'Javascript');
+insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Pepe', 24,'Praia', 'python');
 
+insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Nietzsche', 52,'barcelona', 'Javascript');
 
- insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Adrian', '3','barcelona', 'Javascript');
-
-insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Pepe', '24','Praia', 'python');
-
-insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Nietzsche', 'Lutzen','barcelona', 'Javascript');
-
-insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Kelly Slater', '28','california', 'Javascript');
+insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Kelly Slater', 28,'california', 'Javascript');
 
 CREATE TABLE students(  id        SERIAL PRIMARY KEY,  name      VARCHAR(30) NOT NULL,  address   VARCHAR(120),  graduated_CodeYourFuture bit not null );
 
                                                                     ^
 insert into students(name, address, graduated_CodeYourFuture) values ('Kelly Slater','california', '0');
-
-                                                                 ^
+                                        ^
 insert into students(name, address, graduated_CodeYourFuture) values ('adrian','caracas', '0');
 
 insert into students(name, address, graduated_CodeYourFuture) values ('alvaro','barcelona', '1');
@@ -68,13 +64,23 @@ cyf_classes=# SELECT * FROM students;
 (11 filas)
 
 
-CREATE TABLE classes(  id        SERIAL PRIMARY KEY,  leading_mentor     VARCHAR(30) NOT NULL,  class_topic VARCHAR(120),  class_date date , class_location   VARCHAR(30) NOT NULL);
+CREATE TABLE classes(  id        SERIAL PRIMARY KEY,  leading_mentor_id INT references mentors(id) ;
+,  class_topic VARCHAR(120),  class_date date , class_location   VARCHAR(30) NOT NULL);
 
-insert into classes(leading_mentor, class_topic, class_date , class_location ) values ('Kelly Slater','Javascript', '22-06-2021', 'barcelona');
+insert into classes(leading_mentor_id, class_topic, class_date , class_location ) values (1,'Javascript', '22-06-2021', 'barcelona');
+
+insert into classes(leading_mentor_id, class_topic, class_date , class_location ) values (5,'node.js', '23-06-2021', 'barcelona');
 
 CREATE TABLE assistance(  id        SERIAL PRIMARY KEY,  student_id INT references students(id),  class_id INT references classes(id));
-CREATE TABLE
+
 insert into assistance(student_id, class_id) values (1,1);
+
+select * from mentors where  years_glasgow > 5;
+select * from mentors where fav_programming_language = 'Javascript';
+ select * from students where   graduated_codeyourfuture = 1::BIT;
+ select * from classes where class_date  < '2021-07-01 00:01:00'  ;
+  select * from assistance where class_id = 1;
+
 
 ```
 
