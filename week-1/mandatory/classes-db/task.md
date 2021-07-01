@@ -9,7 +9,8 @@ To submit this homework write the correct commands for each question here:
 ```sql
 
 
- \c cyf_classes;
+ 
+CREATE DATABASE cyf_classes;
 
  CREATE TABLE mentors (  id        SERIAL PRIMARY KEY,  name      VARCHAR(30) NOT NULL,  years_glasgow     int,  address   VARCHAR(120),  fav_programming_language VARCHAR(30) );
 
@@ -22,8 +23,7 @@ insert into mentors  (name, years_glasgow , address, fav_programming_language) v
 insert into mentors  (name, years_glasgow , address, fav_programming_language) values ('Kelly Slater', 28,'california', 'Javascript');
 
 CREATE TABLE students(  id        SERIAL PRIMARY KEY,  name      VARCHAR(30) NOT NULL,  address   VARCHAR(120),  graduated_CodeYourFuture bit not null );
-
-                                                                    ^
+                                                                 ^
 insert into students(name, address, graduated_CodeYourFuture) values ('Kelly Slater','california', '0');
                                         ^
 insert into students(name, address, graduated_CodeYourFuture) values ('adrian','caracas', '0');
@@ -46,22 +46,7 @@ insert into students(name, address, graduated_CodeYourFuture) values ('Ato','car
 
 insert into students(name, address, graduated_CodeYourFuture) values ('Juan','caracas', '0');
 
-cyf_classes=# SELECT * FROM students;
-
- id |     name     |    address    | graduated_codeyourfuture
-----+--------------+---------------+--------------------------
-  1 | Kelly Slater | california    | 0
-  2 | adrian       | caracas       | 0
-  3 | alvaro       | barcelona     | 1
-  4 | mateo        | cali          | 0
-  5 | leon         | buenos aires  | 0
-  6 | manuel       | lima          | 0
-  7 | emilio       | caracas       | 0
-  8 | diego        | caracas       | 0
-  9 | ronar        | santo domingo | 0
- 10 | Ato          | caracas       | 0
- 11 | Juan         | caracas       | 0
-(11 filas)
+ SELECT * FROM students;
 
 
 CREATE TABLE classes(  id        SERIAL PRIMARY KEY,  leading_mentor_id INT references mentors(id) ;
@@ -77,9 +62,9 @@ insert into assistance(student_id, class_id) values (1,1);
 
 select * from mentors where  years_glasgow > 5;
 select * from mentors where fav_programming_language = 'Javascript';
- select * from students where   graduated_codeyourfuture = 1::BIT;
- select * from classes where class_date  < '2021-07-01 00:01:00'  ;
-  select * from assistance where class_id = 1;
+select * from students where   graduated_codeyourfuture = 1::BIT;
+select * from classes where class_date  < '2021-07-01 00:01:00'  ;
+select * from assistance where class_id = 1;
 
 
 ```
