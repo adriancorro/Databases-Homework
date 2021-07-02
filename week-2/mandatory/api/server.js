@@ -14,32 +14,54 @@ const pool = new Pool({
 });
 
 app.get("/customers", function(req, res) {
-    pool.query('SELECT * FROM customers', (error, result) => {
-        res.json(result.rows);
-    });
+    try {
+        pool.query('SELECT * FROM customers', (error, result) => {
+            if (result){
+                res.json(result.rows);
+            }else{
+                res.send(error.message)
+            }
+        });
+    } catch (error) {
+            console.error(error.message);
+    }
 });
 
 app.get("/suppliers", function(req, res) {
     try {
-    pool.query('SELECT * FROM suppliers', (error, result) => {
-        res.json(result.rows);
-    });
+        pool.query('SELECT * FROM suppliers', (error, result) => {
+            if (result){
+                res.json(result.rows);
+            }else{
+                res.send(error.message)
+            }
+        });
 } catch (error) {
-    console.error(error.message);
+        console.error(error.message);
   }
 });
 
+/* 
+Tabla products contiene 
+id |      product_name       | unit_price | supplier_id
+
+Tabla suppliers contiene 
+id | supplier_name |    country
+
+Unimos con products.supplier_id = suppliers.id 
+*/
+
 app.get("/products", function(req, res) {
     try {
-    pool.query('SELECT supplier_name, product_name FROM products INNER JOIN  suppliers ON products.id=products.supplier_id', (error, result) => {
-        if (result){
-            res.json(result.rows);
-        }else{
-            res.send(error.message)
-        }
-    });
+        pool.query('SELECT supplier_name, product_name, supplier_id FROM products INNER JOIN  suppliers ON suppliers.id=products.supplier_id', (error, result) => {
+            if (result){
+                res.json(result.rows);
+            }else{
+                res.send(error.message)
+            }
+        });
 } catch (error) {
-    console.error(error.message);
+        console.error(error.message);
   }
 });
 
