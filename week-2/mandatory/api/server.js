@@ -13,11 +13,40 @@ const pool = new Pool({
     port: 5432
 });
 
-app.get("/", function(req, res) {
+app.get("/customers", function(req, res) {
     pool.query('SELECT * FROM customers', (error, result) => {
         res.json(result.rows);
     });
 });
+
+app.get("/suppliers", function(req, res) {
+    try {
+    pool.query('SELECT * FROM suppliers', (error, result) => {
+        res.json(result.rows);
+    });
+} catch (error) {
+    console.error(error.message);
+  }
+});
+
+app.get("/products", function(req, res) {
+    try {
+    pool.query('SELECT supplier_name, product_name FROM products INNER JOIN  suppliers ON products.id=products.supplier_id', (error, result) => {
+        if (result){
+            res.json(result.rows);
+        }else{
+            res.send(error.message)
+        }
+    });
+} catch (error) {
+    console.error(error.message);
+  }
+});
+
+
+
+
+
 
 
 
