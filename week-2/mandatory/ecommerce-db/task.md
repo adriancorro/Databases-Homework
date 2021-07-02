@@ -10,6 +10,16 @@ To submit this homework write the correct commands for each question here:
 
 ```sql
 
+CREATE DATABASE cyf_ecommerce;
+
+select name, address FROM customers WHERE  country = 'United States';
+select * from customers ORDER BY name  ASC;
+select * from products where unit_price > 100;
+SELECT * FROM products WHERE product_name LIKE '%socks%';
+SELECT *  FROM products  order by unit_price desc limit 5;
+
+
+
 
 ```
 
