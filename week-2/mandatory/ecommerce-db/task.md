@@ -17,6 +17,47 @@ select * from customers ORDER BY name  ASC;
 select * from products where unit_price > 100;
 SELECT * FROM products WHERE product_name LIKE '%socks%';
 SELECT *  FROM products  order by unit_price desc limit 5;
+SELECT supplier_name, product_name, unit_price FROM products INNER JOIN  suppliers ON suppliers.id=products.supplier_id;
+SELECT supplier_name, product_name FROM products INNER JOIN  suppliers ON suppliers.id=products.supplier_id WHERE country = 'United Kingdom' ;
+
+8. Retrieve all orders from customer ID `1`
+ select * from orders where customer_id = '1';
+
+9. Retrieve all orders from customer named `Hope Crosby`
+SELECT *  FROM orders INNER JOIN  customers ON customers.id= orders.customer_id WHERE name = 'Hope Crosby';
+
+10. Retrieve all the products in the order `ORD006`. The result should only contain the columns `product_name`, `unit_price` and `quantity`.
+SELECT product_name, unit_price, quantity 
+FROM order_items 
+JOIN  products ON products.id=order_items.product_id 
+JOIN  orders ON  orders.id=order_items.order_id 
+WHERE order_reference= 'ORD006';
+
+11. Retrieve all the products with their supplier for all orders of all customers. The result should only contain the columns `name` (from customer), `order_reference` `order_date`, `product_name`, `supplier_name` and `quantity`.
+
+ SELECT name, order_reference, order_date, quantity , product_name, supplier_name 
+ FROM customers 
+ join orders on  orders.id=customers.id 
+ join order_items on order_items.order_id=orders.id
+ join  products  on products.id = order_items.product_id 
+ join  suppliers on suppliers.id = products.supplier_id 
+
+12. Retrieve the names of all customers who bought a product from a supplier from China.
+
+ SELECT name 
+ FROM customers 
+ join orders on  orders.id=customers.id 
+ join order_items on order_items.order_id=orders.id
+ join  products  on products.id = order_items.product_id 
+ join  suppliers on suppliers.id = products.supplier_id 
+ where suppliers.country = 'China'
+
+
+
+
+
+
+
 
 
 
