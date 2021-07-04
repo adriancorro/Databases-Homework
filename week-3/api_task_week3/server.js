@@ -1,5 +1,7 @@
 const express = require('express');
 const app = express();
+const fetch = require("node-fetch");
+
 
  const { Pool } = require('pg');
  const bodyParser = require("body-parser");
@@ -62,7 +64,7 @@ app.get("/suppliers", function(req, res) {
 const queryProductSearchName = `SELECT supplier_name, product_name, supplier_id FROM products INNER JOIN  suppliers ON suppliers.id=products.supplier_id WHERE  product_name =  $1  `
 const queryProducts = 'SELECT supplier_name, product_name, supplier_id FROM products INNER JOIN  suppliers ON suppliers.id=products.supplier_id'
 
-app.get("/products2", function async (req, res) {
+app.get("/products", function  (req, res) {
     let query = req.query.name;
     try {
         
@@ -146,5 +148,86 @@ app.post("/customers", function (req, res) {
       .then(() => res.send("New Customers created!"))
       .catch((e) => console.error(e));
   });
+
+/*   - Add a new POST endpoint `/products` to create a new product
+   (with a product name, a price and a supplier id).
+    Check that the price is a positive integer and that the
+     supplier ID exists in the database, otherwise return an error. */
+
+     app.post("/products", function (req, res) {
+        const newproduct_name = req.body.product_name;
+        const newunit_price = req.body.unit_price;
+        const newsupplier_id = req.body.supplier_id;
+      
+        const query =
+          "INSERT INTO products (product_name, unit_price, supplier_id) VALUES ($1, $2, $3)";
+      
+        pool
+          .query(query, [newproduct_name, newunit_price, newsupplier_id ])
+          .then(() => res.send("New product created!"))
+          .catch((e) => console.error(e));
+      });
+
+
+   /*    - Add a new POST endpoint `/customers/:customerId/orders` to 
+      create a new order (including an order date, and an order reference) for
+       a customer. Check that the customerId corresponds to an existing customer or return an error.
+ */
+
+       
+               app.post("/customers/:customerId/orders", function (req, res) {
+                //Desestructuración
+                const { order_date, order_reference }  =  req.body
+                const id =  parseInt(req.params.customerId) 
+
+                if( !isNaN(id) && id >  0 ){
+                    const queryFind = `select count(*) as num FROM customers WHERE id = $1`
+                    pool 
+                     .query(queryFind, [id])
+                     .then( result => { 
+                        console.log(result.rows[0].num )
+                         if(result.rows[0].num > 0 ){
+                            const query = "INSERT INTO orders (order_date, order_reference, customer_id ) VALUES ($1, $2, $3)";
+                            pool
+                            .query(query, [order_date,  order_reference, id ])
+                            .then(() => res.send("New orders created!"))
+                            .catch((e) => console.error(e)); 
+                         }else{
+                             console.log("Customer not exist")
+                             res.send("no exist")
+                         }
+                     } )
+                }else{
+                    res.send("invalid customer id")
+                }
+              });
+ 
+      
+/*     - Add a new PUT endpoint `/customers/:customerId` to update an existing customer (name, address, city and country).
+ */
+
+  const updateCustomer = `UPDATE customers SET name = $1, address = $2, city = $3, country = $4 where id = $5`;
+  app.put("/customers/:customerId", (req, res)=> {
+    let {  name, address, city, country } = req.body;
+    const id =  parseInt(req.params.customerId) 
+    pool.connect((err, client, release) => {
+		if (err) {
+			return console.error("Error acquiring client", err.stack);
+		}
+
+		client.query(updateCustomer, [name, address, city , country, id], (err, result) => {
+			release();
+			if (result.rowCount > 0) {
+				res.status(201).send("1 row was updated");
+			} else {
+				res.status(404).send("Bad request");
+			}
+		});
+	});
+
+  })
+
+
+
 
 app.listen(3000, () => console.log("Server is up and running"))
