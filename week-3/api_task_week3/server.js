@@ -5,6 +5,7 @@ const fetch = require("node-fetch");
 
  const { Pool } = require('pg');
  const bodyParser = require("body-parser");
+const { json } = require('body-parser');
  app.use(bodyParser.json());
 
 
@@ -205,7 +206,6 @@ app.post("/customers", function (req, res) {
       
 /*     - Add a new PUT endpoint `/customers/:customerId` to update an existing customer (name, address, city and country).
  */
-
   const updateCustomer = `UPDATE customers SET name = $1, address = $2, city = $3, country = $4 where id = $5`;
   app.put("/customers/:customerId", (req, res)=> {
     let {  name, address, city, country } = req.body;
@@ -224,8 +224,43 @@ app.post("/customers", function (req, res) {
 			}
 		});
 	});
-
+ 
   })
+
+/*   - Add a new DELETE endpoint `/orders/:orderId` to delete an existing order along all the associated order items.
+ */
+
+
+app.delete("/orders/:orderId" ,  (req, res) => {
+   const orderId = parseInt(req.params.orderId);
+   const deleteOrder_idInOrderItems = "DELETE from order_items where  order_id = $1"
+   const deleteOrder = "DELETE from orders WHERE id = $1"
+
+   if(!isNaN(orderId) && orderId > 0 ){
+       // 1-  We check that id exist in the orders table.
+       const checkIdOrders =  "SELECT count(*) as num FROM orders WHERE id = $1"
+       pool.query(checkIdOrders, [orderId])
+              .then(result => {
+                  if(result.rows[0].num > 0){
+                        //2- To delete order id from table orders we must deleted order_id from table order_items. 
+                        pool.query(deleteOrder_idInOrderItems, [orderId]).then(() => {
+                            pool.query(deleteOrder, [orderId], (error, result) => {
+                                if (result){
+                                    //3  We delete our order
+                                    res.send(`Order with ${orderId} deleted`)
+                                    console.log(`Order with ${orderId} deleted.`)
+                                }else{
+                                res.send(`Order with ${orderId} not deleted. ${error}`)
+                                console.log(`Order with ${orderId} not deleted. ${error}`)
+                                }
+                            })
+                        })
+                  }else{
+                      res.send(` ID ${orderId} from table Orders not exist `)
+                  }
+              })
+   }
+})
 
 
 
