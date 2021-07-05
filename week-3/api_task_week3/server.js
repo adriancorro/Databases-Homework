@@ -263,6 +263,12 @@ app.delete("/orders/:orderId" ,  (req, res) => {
 })
 
 
+/* - Add a new DELETE endpoint `/customers/:customerId` to delete an existing customer only if this customer doesn't have orders.
+ */
+
+
+
+
 
 
 app.listen(3000, () => console.log("Server is up and running"))
