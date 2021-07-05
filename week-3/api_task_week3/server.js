@@ -174,8 +174,6 @@ app.post("/customers", function (req, res) {
       create a new order (including an order date, and an order reference) for
        a customer. Check that the customerId corresponds to an existing customer or return an error.
  */
-
-       
                app.post("/customers/:customerId/orders", function (req, res) {
                 //Desestructuración
                 const { order_date, order_reference }  =  req.body
@@ -197,13 +195,24 @@ app.post("/customers", function (req, res) {
                              console.log("Customer not exist")
                              res.send("no exist")
                          }
-                     } )
+                        })
                 }else{
                     res.send("invalid customer id")
                 }
               });
- 
-      
+
+    // EXTRA
+    // INSERT DATA IN order_items
+     app.post("/order_items", (req, res) =>{
+         //Desestructuración
+         const {order_id, product_id, quantity  } = req.body
+         const insertDates = "INSERT INTO order_items (order_id, product_id, quantity) VALUES ($1, $2, $3) "
+         pool.query(insertDates, [order_id, product_id, quantity])
+            .then(() => res.send("New order_items!") )
+            .catch(e => {res.send(e); console.log(e) })
+    })  
+
+
 /*     - Add a new PUT endpoint `/customers/:customerId` to update an existing customer (name, address, city and country).
  */
   const updateCustomer = `UPDATE customers SET name = $1, address = $2, city = $3, country = $4 where id = $5`;
@@ -231,7 +240,7 @@ app.post("/customers", function (req, res) {
  */
 
 
-app.delete("/orders/:orderId" ,  (req, res) => {
+app.delete("/orders/:orderId" ,  (req, res) => {    
    const orderId = parseInt(req.params.orderId);
    const deleteOrder_idInOrderItems = "DELETE from order_items where  order_id = $1"
    const deleteOrder = "DELETE from orders WHERE id = $1"
@@ -265,6 +274,51 @@ app.delete("/orders/:orderId" ,  (req, res) => {
 
 /* - Add a new DELETE endpoint `/customers/:customerId` to delete an existing customer only if this customer doesn't have orders.
  */
+
+app.delete("/customers/:customerId" ,  (req, res) =>{
+    const customerId = parseInt(req.params.customerId)
+/*     JOIN is not valid in a DELETE query according to the 
+       postgresql documentation. You might need to concatenate 
+       the left and right parts of the IN expression.
+
+       You can't use the JOIN syntax to join to the table being
+        deleted from. The correct syntax is to use USING instead:
+ */
+
+    const queryDeleteOrder_itemsIdFromOrders = "DELETE from  order_items USING orders WHERE orders.id=order_items.order_id   AND orders.customer_id = $1;"
+    const queryDeleteOrder_items = " DELETE  FROM orders WHERE customer_id = $1" 
+    const queryDeleteCustomerId = "DELETE from customers WHERE id = $1"
+    const checkCustomerExists = "SELECT count(*) as num FROM customers WHERE id = $1"
+    pool.query(checkCustomerExists , [customerId])
+         .then( result => {
+             if(result.rows[0].num > 0){
+                    pool.query(queryDeleteOrder_itemsIdFromOrders, [customerId])
+                    .then(()=>{
+                        pool.query( queryDeleteOrder_items, [customerId])
+                    })
+                    .then(() =>{
+                        pool.query(queryDeleteCustomerId, [customerId] , (error, result) =>{
+                            if(result){
+                                res.send("delete")
+                            }else{
+                                res.send(`not delete  ${error}` )
+                            }
+                        })
+            
+                    })
+                    .catch((e) => {console.log(e) ; res.send(e.detail)})
+             }else{
+                 res.send("customers not exist")
+             }
+         })
+         .catch( e => console.log(e))
+   /*  
+ */
+  
+})
+
+
+
 
 
 
