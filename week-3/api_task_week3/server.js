@@ -66,7 +66,7 @@ const queryProductSearchName = `SELECT supplier_name, product_name, supplier_id 
 const queryProducts = 'SELECT supplier_name, product_name, supplier_id FROM products INNER JOIN  suppliers ON suppliers.id=products.supplier_id'
 
 app.get("/products", function  (req, res) {
-    let query = req.query.name;
+    let query = req.query.name; 
     try {
         
         if (query){
@@ -156,17 +156,23 @@ app.post("/customers", function (req, res) {
      supplier ID exists in the database, otherwise return an error. */
 
      app.post("/products", function (req, res) {
+         //Desestructuracion.  Destructuring.
+         const {product_name, unit_price, supplier_id}  = req.body; 
+
+        // Sin desestructuracion. Without destructuring
+        /* 
         const newproduct_name = req.body.product_name;
         const newunit_price = req.body.unit_price;
         const newsupplier_id = req.body.supplier_id;
+         */
       
         const query =
           "INSERT INTO products (product_name, unit_price, supplier_id) VALUES ($1, $2, $3)";
       
         pool
-          .query(query, [newproduct_name, newunit_price, newsupplier_id ])
+          .query(query, [product_name, unit_price, supplier_id])
           .then(() => res.send("New product created!"))
-          .catch((e) => console.error(e));
+          .catch((e) => {console.error(e);  res.send(e)});
       });
 
 
@@ -190,12 +196,14 @@ app.post("/customers", function (req, res) {
                             pool
                             .query(query, [order_date,  order_reference, id ])
                             .then(() => res.send("New orders created!"))
-                            .catch((e) => console.error(e)); 
-                         }else{
+                            .catch((e) => {console.error(e); res.send(e.detail) }); 
+                         }else{ 
                              console.log("Customer not exist")
-                             res.send("no exist")
-                         }
-                        })
+                             res.send("no exist") 
+                         } 
+                        }) 
+                     .catch(e => res.send(e.detail))   
+
                 }else{
                     res.send("invalid customer id")
                 }
@@ -272,7 +280,8 @@ app.delete("/orders/:orderId" ,  (req, res) => {
 })
 
 
-/* - Add a new DELETE endpoint `/customers/:customerId` to delete an existing customer only if this customer doesn't have orders.
+/* - Add a new DELETE endpoint `/customers/:customerId` to delete an existing customer
+ only if this customer doesn't have orders.
  */
 
 app.delete("/customers/:customerId" ,  (req, res) =>{
@@ -288,7 +297,7 @@ app.delete("/customers/:customerId" ,  (req, res) =>{
     const queryDeleteOrder_itemsIdFromOrders = "DELETE from  order_items USING orders WHERE orders.id=order_items.order_id   AND orders.customer_id = $1;"
     const queryDeleteOrder_items = " DELETE  FROM orders WHERE customer_id = $1" 
     const queryDeleteCustomerId = "DELETE from customers WHERE id = $1"
-    const checkCustomerExists = "SELECT count(*) as num FROM customers WHERE id = $1"
+    const checkCustomerExists = "SELECT count(id) as num FROM customers WHERE id = $1"
     pool.query(checkCustomerExists , [customerId])
          .then( result => {
              if(result.rows[0].num > 0){
@@ -317,12 +326,30 @@ app.delete("/customers/:customerId" ,  (req, res) =>{
   
 })
 
+/* - Add a new GET endpoint `/customers/:customerId/orders` to load all the orders along the items 
+in the orders of a specific customer. Especially, the following information should be 
+returned: order references, order dates, product names, unit prices, suppliers and quantities.
+ */
 
-
-
-
-
-
-
+app.get("/customers/:customerId/orders" , (req, res) => {
+   const customerId = parseInt(req.params.customerId) 
+   if(!isNaN(customerId) && customerId > 0 ){
+       const checkCustomerId = "SELECT count(id) AS num FROM customers WHERE id = $1"
+       pool.query(checkCustomerId, [customerId])
+              .then(response => {
+                  if(response.rows[0].num > 0){
+                    const queryGetCustomers = " SELECT order_reference, order_date,  product_name , unit_price, supplier_name, quantity  FROM orders JOIN order_items  ON  order_items.order_id=orders.id JOIN products ON products.id= order_items.product_id JOIN suppliers ON suppliers.id=products.supplier_id  WHERE customer_id = $1";
+                    pool.query(queryGetCustomers, [customerId] ,( error , result) => {
+                        res.json(result.rows)   
+                    })
+                  }else{
+                      res.send(`The id ${customerId} does not exist`)
+                  }
+              }) 
+              .catch(e => res.send(e))
+   }else{
+       res.send(`The value ${req.params.customerId} is not a number`)
+   }
+})
 
 app.listen(3000, () => console.log("Server is up and running"))
