@@ -50,7 +50,7 @@ id | supplier_name |    country
 
 Unimos con products.supplier_id = suppliers.id 
 */
-
+/* 
 app.get("/products", function(req, res) {
     try {
         pool.query('SELECT supplier_name, product_name, supplier_id FROM products INNER JOIN  suppliers ON suppliers.id=products.supplier_id', (error, result) => {
@@ -63,7 +63,7 @@ app.get("/products", function(req, res) {
 } catch (error) {
         console.error(error.message);
   }
-});
+}); */
 
 //****************************************************************************************************** */
 /* TAREA HOME-WORK  WEEK - 3 
